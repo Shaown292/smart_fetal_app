@@ -43,6 +43,6 @@ class SplashScreenController extends GetxController {
 
     // ✅ Navigate to home screen after splash
     // Replace '/home' with your route
-    // Get.offNamed('/home');
+    Get.offNamed('/home');
   }
 }
