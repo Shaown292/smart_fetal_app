@@ -1,9 +1,11 @@
 import 'package:flutter/animation.dart';
 import 'package:get/get.dart';
+import 'package:smart_fetal_app/app/routes/app_pages.dart';
 
 class HomeController extends GetxController with GetTickerProviderStateMixin {
   late AnimationController ripple1;
   late AnimationController ripple2;
+  RxBool triggerAnimation = false.obs;
 
   @override
   void onInit() {
@@ -23,12 +25,14 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
     Future.delayed(const Duration(milliseconds: 800), () {
       ripple2.repeat();
     });
+
   }
 
   @override
   void onClose() {
     ripple1.dispose();
     ripple2.dispose();
+
     super.onClose();
   }
 }
