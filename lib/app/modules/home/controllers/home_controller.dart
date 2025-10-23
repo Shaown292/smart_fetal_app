@@ -1,6 +1,5 @@
 import 'package:flutter/animation.dart';
 import 'package:get/get.dart';
-import 'package:smart_fetal_app/app/routes/app_pages.dart';
 
 class HomeController extends GetxController with GetTickerProviderStateMixin {
   late AnimationController ripple1;

@@ -270,14 +270,14 @@ class CheckingPositionView extends GetView<CheckingPositionController> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        Text(
-                          "-4.3°",
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
-                            color: Colors.black,
-                          ),
+                      Obx(()=>   Text(
+                        controller.imuA.value.pitch.toString(),
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                          color: Colors.black,
                         ),
+                      ),),
                       ],
                     ),
                   ),
@@ -304,14 +304,14 @@ class CheckingPositionView extends GetView<CheckingPositionController> {
                             ),
                           ),
                           const SizedBox(height: 10),
-                          Text(
-                            "-0.1°",
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
-                              color: Colors.black,
-                            ),
-                          ),
+                       Obx(()=>    Text(
+                         controller.imuA.value.roll.toString(),
+                         style: GoogleFonts.poppins(
+                           fontWeight: FontWeight.w700,
+                           fontSize: 16,
+                           color: Colors.black,
+                         ),
+                       ),),
                         ],
                       ),
                     ),
@@ -325,6 +325,7 @@ class CheckingPositionView extends GetView<CheckingPositionController> {
                    fontWeight: FontWeight.w700,
                    fontSize: 20,
                    color:controller.updateChanges.value? Color(0xFF3C8B40):  Color(0xFFDC2626),
+
                  ),
                ),),
               SizedBox(height: 16),
@@ -408,6 +409,8 @@ class CheckingPositionView extends GetView<CheckingPositionController> {
                   Future.delayed(const Duration(seconds: 5), () {
                     controller.updateChanges.value = !controller.updateChanges.value;
                     controller.triggerAnimation.value = false;
+                    controller.updateImuA(5.5, 10.2, 1.0);
+                    controller.updateImuB(-3.0, 7.0, 1.0);
                   });
                 },
               ),
