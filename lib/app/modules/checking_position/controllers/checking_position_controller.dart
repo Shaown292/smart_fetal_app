@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/animation.dart';
 import 'package:flutter/services.dart';
@@ -11,29 +12,15 @@ class CheckingPositionController extends GetxController with GetTickerProviderSt
   late AnimationController ripple2;
   RxBool triggerAnimation = false.obs;
   RxBool updateChanges = false.obs;
+  RxList<PrenatalBeltData> parentalData = <PrenatalBeltData>[].obs;
+  late final style = getStyleForPosition(parentalData.last.positionState);
 
-  RxList<PrenatalBeltData> dataList = <PrenatalBeltData>[].obs;
+  // RxList<PrenatalBeltData> dataList = <PrenatalBeltData>[].obs;
   RxBool isLoading = false.obs;
 
   Timer? _timer;
 
-  Future<void> loadLocalJson() async {
-    try {
-      isLoading.value = true;
-      final jsonString =
-      await rootBundle.loadString('assets/data/prenatal_belt_dummy_array.json');
-      final parsed = PrenatalBeltData.listFromJson(jsonString);
-      dataList.assignAll(parsed);
-      print('✅ Loaded ${dataList.length} records from local JSON');
-    } catch (e) {
-      print('❌ Error loading JSON: $e');
-    } finally {
-      isLoading.value = false;
-    }
-  }
 
-
-  // Reactive tilt/rotation
   var imuA = TiltRotation(pitch: 3.2, roll: 2.0, yaw: 0.6).obs;
   var imuB = TiltRotation(pitch: 0.1, roll: 2, yaw: 0).obs;
 
@@ -58,7 +45,8 @@ class CheckingPositionController extends GetxController with GetTickerProviderSt
   @override
   void onInit() {
     super.onInit();
-    loadLocalJson();
+    fetchPrenatalData();
+    // loadLocalJson();
     ripple1 = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -84,6 +72,14 @@ class CheckingPositionController extends GetxController with GetTickerProviderSt
 
     super.onClose();
   }
+
+  Future<List<PrenatalBeltData>> fetchPrenatalData() async {
+    final String response = await rootBundle.loadString('assets/data/parental_belt.json');
+    final List<dynamic> data = json.decode(response);
+    parentalData.value = data.map((e) => PrenatalBeltData.fromJson(e)).toList();
+    print(parentalData.last.positionState);
+    return data.map((e) => PrenatalBeltData.fromJson(e)).toList();
+  }
 }
 
 class TiltRotation {
@@ -93,4 +89,8 @@ class TiltRotation {
 
   TiltRotation({required this.pitch, required this.roll, required this.yaw});
 }
+
+
+
+
 

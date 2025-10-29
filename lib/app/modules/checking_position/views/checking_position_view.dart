@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:smart_fetal_app/app/model/parental_belt_data.dart';
 
 import '../../../widgets/custom_circular_animation.dart';
 import '../../../widgets/primary_button.dart';
@@ -117,77 +118,13 @@ class CheckingPositionView extends GetView<CheckingPositionController> {
                 ],
               ),
               SizedBox(height: 10),
-              Obx(() => controller.updateChanges.value
-                  ? Container(
+              Obx(() =>
+                  Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Color(0xFFECFDF5),
+                  color: controller.style.containerColor,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Color(0xFF34D399), width: 1),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Live Posture",
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF4B5563),
-                          ),
-                        ),
-                        Container(
-                          height: 8,
-                          width: 8,
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xFF4CAF50)
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 17),
-                    Container(
-                      height: 64,
-                      width: 64,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Color(0xFFB4E3B9).withOpacity(0.5),
-                        image: DecorationImage(
-                          image: AssetImage("assets/images/green_bed.png"),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 17),
-                    Text(
-                      "Left-side",
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF4CAF50),
-                      ),
-                    ),
-                    SizedBox(height: 17),
-                    Text(
-                      "Left side lying",
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF4B5563),
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                  ],
-                ),
-              )
-                  : Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Color(0xFFFEE2E2),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Color(0xFFF87171), width: 1),
+                  border: Border.all(color: controller.style.borderColor, width: 1),
 
                 ),
                 child: Column(
@@ -208,7 +145,7 @@ class CheckingPositionView extends GetView<CheckingPositionController> {
                           width: 8,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color:Color(0xFF9D476E),
+                            color:controller.style.dotColor,
                           ),
                         ),
                       ],
@@ -219,24 +156,24 @@ class CheckingPositionView extends GetView<CheckingPositionController> {
                       width: 64,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Color(0xFFDC2626).withOpacity(0.25),
+                        color: controller.style.statusColor.withOpacity(0.25),
                         image: DecorationImage(
-                          image: AssetImage("assets/images/red_bed.png"),
+                          image: AssetImage(controller.style.icon),
                         ),
                       ),
                     ),
                     SizedBox(height: 17),
                     Text(
-                      "Supine",
+                      controller.style.status,
                       style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFFDC2626),
+                        color: controller.style.statusColor,
                       ),
                     ),
                     SizedBox(height: 17),
                     Text(
-                      "Lying flat on back",
+                      controller.style.message,
                       style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -271,7 +208,7 @@ class CheckingPositionView extends GetView<CheckingPositionController> {
                         ),
                         const SizedBox(height: 10),
                       Obx(()=>   Text(
-                        controller.imuA.value.pitch.toString(),
+                        controller.parentalData.last.pitch.toString(),
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.w700,
                           fontSize: 16,
@@ -305,7 +242,7 @@ class CheckingPositionView extends GetView<CheckingPositionController> {
                           ),
                           const SizedBox(height: 10),
                        Obx(()=>    Text(
-                         controller.imuA.value.roll.toString(),
+                         controller.parentalData.last.roll.toString(),
                          style: GoogleFonts.poppins(
                            fontWeight: FontWeight.w700,
                            fontSize: 16,
@@ -320,11 +257,11 @@ class CheckingPositionView extends GetView<CheckingPositionController> {
               ),
               SizedBox(height: 10),
                Obx(() =>  Text(
-                 controller.updateChanges.value?  "Good Posture" : "Need adjustment",
+                 controller.style.rotationSuggestion,
                  style: GoogleFonts.poppins(
                    fontWeight: FontWeight.w700,
                    fontSize: 20,
-                   color:controller.updateChanges.value? Color(0xFF3C8B40):  Color(0xFFDC2626),
+                   color:controller.style.statusColor,
 
                  ),
                ),),
@@ -339,14 +276,14 @@ class CheckingPositionView extends GetView<CheckingPositionController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                     controller.updateChanges.value ? "You’re in a healthy posture. Keep gently moving.": "Please avoid lying flat on your back. Roll to your LEFT side with a pillow behind your back.",
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color:controller.updateChanges.value ?Color(0xFF4CAF50) : Color(0xFF92400E),
-                      ),
-                    ),
+                   Obx(()=>  Text(
+                     controller.style.remarks,
+                     style: GoogleFonts.poppins(
+                       fontSize: 14,
+                       fontWeight: FontWeight.w500,
+                       color:controller.updateChanges.value ?Color(0xFF4CAF50) : Color(0xFF92400E),
+                     ),
+                   ),),
                     SizedBox(height: 12),
                     Text(
                       "Suggestion:",
@@ -359,22 +296,17 @@ class CheckingPositionView extends GetView<CheckingPositionController> {
                     SizedBox(height: 5),
                     Row(
                       children: [
-                        Text(
-                          "1.",
+                      Obx(()=>   Flexible(
+                        child: Text(
+                          controller.style.suggestionsForPatient,
                           style: GoogleFonts.poppins(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: Color(0xFF111827),
                           ),
                         ),
-                        Text(
-                         controller.updateChanges.value ? " Continue with Micro-movement": " Slowly turn to your left.",
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF374151),
-                          ),
-                        ),
+                      ),)
+
                       ],
                     ),
                     SizedBox(height: 5),

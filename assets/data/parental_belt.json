@@ -1,4 +1,44 @@
+[
+  {
+    "temp_mean_c": 42.1,
+    "position_state": "left-side",
+    "position_quality": "preferred",
+    "heart_rate_bpm": 78,
+    "pitch": 10.5,
+    "roll": -5.2,
+    "yaw": 1.0,
+    "timestamp": 1698585600000
+  },
+  {
+    "temp_mean_c": 42.3,
+    "position_state": "upright",
+    "position_quality": "ok",
+    "heart_rate_bpm": 80,
+    "pitch": 0.0,
+    "roll": 0.0,
+    "yaw": 0.0,
+    "timestamp": 1698585660000
+  },
 
-  {"timestamp":0,"imuA":{"acc":{"x":-0.049,"y":1.409,"z":1.118},"gyr":{"x":-0.9,"y":181.48,"z":14.82},"temp":36.75},"imuB":{"acc":{"x":0.014,"y":-0.166,"z":1.05},"gyr":{"x":0.49,"y":-0.55,"z":2.74},"temp":36.79},"adxl":{"acc":{"x":0.002,"y":0.686,"z":-0.514}},"biosignals":{"heart_rate_bpm":74,"spo2_pct":98.0,"die_temp_c":32.9},"system":{"temp_mean":36.55,"i2c_status":"OK","belt_n":{"x":0.004,"y":-0.0,"z":0.999},"belt_u":{"x":1.0,"y":0.0,"z":0.0},"adxl_plane":{"x":0.02,"y":-0.041}}}
 
-
+  {
+    "temp_mean_c": 42.0,
+    "position_state": "right-side",
+    "position_quality": "ok",
+    "heart_rate_bpm": 76,
+    "pitch": -12.3,
+    "roll": 7.1,
+    "yaw": -2.5,
+    "timestamp": 1698585720000
+  },
+  {
+    "temp_mean_c": 41.9,
+    "position_state": "supine",
+    "position_quality": "avoid",
+    "heart_rate_bpm": 75,
+    "pitch": 0.0,
+    "roll": 15.0,
+    "yaw": 0.0,
+    "timestamp": 1698585780000
+  }
+]

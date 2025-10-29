@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/bluetooth/bindings/bluetooth_binding.dart';
+import '../modules/bluetooth/views/bluetooth_view.dart';
 import '../modules/checking_position/bindings/checking_position_binding.dart';
 import '../modules/checking_position/views/checking_position_view.dart';
 import '../modules/home/bindings/home_binding.dart';
@@ -29,6 +31,11 @@ class AppPages {
       name: _Paths.CHECKING_POSITION,
       page: () => const CheckingPositionView(),
       binding: CheckingPositionBinding(),
+    ),
+    GetPage(
+      name: _Paths.BLUETOOTH,
+      page: () => const BluetoothView(),
+      binding: BluetoothBinding(),
     ),
   ];
 }

@@ -47,5 +47,15 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>NSBluetoothAlwaysUsageDescription</key>
+        <string>This app uses Bluetooth to connect to IMU sensors.</string>
+        <key>NSBluetoothAlwaysUsageDescription</key>
+        <string>This app uses Bluetooth to connect to nearby devices.</string>
+        <key>NSBluetoothAlwaysUsageDescription</key>
+        <string>App needs Bluetooth access to scan devices</string>
+        <key>NSLocationWhenInUseUsageDescription</key>
+        <string>App needs location access to scan for Bluetooth devices</string>
+
+
 	</dict>
 </plist>

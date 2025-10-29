@@ -6,6 +6,7 @@ abstract class Routes {
   static const HOME = _Paths.HOME;
   static const SPLASH_SCREEN = _Paths.SPLASH_SCREEN;
   static const CHECKING_POSITION = _Paths.CHECKING_POSITION;
+  static const BLUETOOTH = _Paths.BLUETOOTH;
 }
 
 abstract class _Paths {
@@ -13,4 +14,5 @@ abstract class _Paths {
   static const HOME = '/home';
   static const SPLASH_SCREEN = '/splash-screen';
   static const CHECKING_POSITION = '/checking-position';
+  static const BLUETOOTH = '/bluetooth';
 }
