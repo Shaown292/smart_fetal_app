@@ -9,12 +9,16 @@ class BluetoothView extends GetView<BluetoothController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('BLE Device Scanner')),
+      appBar: AppBar(title: Text("BLE Devices")),
       body: Column(
         children: [
-          ElevatedButton(
-            onPressed: controller.startScan,
-            child: Text('Scan Devices'),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              onPressed: () => controller.startScan(
+                  serviceUuid: "YOUR_SERVICE_UUID_HERE"), // optional
+              child: Text("Scan Devices"),
+            ),
           ),
           Obx(() => Expanded(
             child: ListView.builder(
@@ -22,14 +26,22 @@ class BluetoothView extends GetView<BluetoothController> {
               itemBuilder: (context, index) {
                 final device = controller.devices[index];
                 return ListTile(
-                  title: Text(device.name.isEmpty ? 'Unknown' : device.name),
+                  title: Text(device.name.isEmpty ? "Unknown" : device.name),
                   subtitle: Text(device.id),
-                  onTap: () => controller.connectToDevice(device.id),
+                  trailing: Obx(() => controller.connectedDeviceId.value == device.id
+                      ? Text(controller.connectionStatus.value)
+                      : SizedBox.shrink()),
+                  onTap: () => controller.connectToDevice(device),
                 );
               },
             ),
           )),
-          Obx(() => Text('Received Data: ${controller.receivedData.value}')),
+          Obx(() => controller.receivedData.value.isEmpty
+              ? SizedBox.shrink()
+              : Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text("Received Data: ${controller.receivedData.value}"),
+          )),
         ],
       ),
     );
