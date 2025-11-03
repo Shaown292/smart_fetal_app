@@ -5,7 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 class BluetoothController extends GetxController {
   final FlutterReactiveBle _ble = FlutterReactiveBle();
-  final myServiceUuid = Uuid.parse("12345678-1234-1234-1234-123456789013");
+  final myServiceUuid = Uuid.parse("12345678-1234-1234-1234-123456789012");
 
   // Observables
   var devices = <DiscoveredDevice>[].obs;
