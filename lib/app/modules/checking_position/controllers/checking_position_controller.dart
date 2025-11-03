@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/animation.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:smart_fetal_app/app/modules/bluetooth/controllers/bluetooth_controller.dart';
 

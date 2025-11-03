@@ -3,9 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import '../../../model/parental_belt_data.dart';
 import '../../../routes/app_pages.dart';
 
@@ -117,22 +115,25 @@ class BluetoothController extends GetxController {
 
   /// Subscribe to the characteristic for streaming data
   void subscribeToCharacteristic(String deviceId, Uuid serviceId, Uuid characteristicId) {
+    print("Entered1");
     final characteristic = QualifiedCharacteristic(
       serviceId: serviceId,
       characteristicId: characteristicId,
       deviceId: deviceId,
     );
-
+    print("Entered2");
     final buffer = StringBuffer(); // optional for fragmented packets
 
     _ble.subscribeToCharacteristic(characteristic).listen(
           (data) {
+            print("Entered3");
         try {
           final decoded = utf8.decode(data);
           buffer.write(decoded);
-
+          print("Entered4");
           // Optional: Detect end of JSON packet (simple heuristic)
           if (decoded.trim().endsWith('}')) {
+            print("Entered5");
             final jsonString = buffer.toString();
             buffer.clear();
 
