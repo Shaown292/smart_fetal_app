@@ -36,12 +36,15 @@ class BluetoothView extends GetView<BluetoothController> {
               },
             ),
           )),
-          Obx(() => controller.receivedData.value.isEmpty
-              ? SizedBox.shrink()
-              : Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text("Received Data: ${controller.receivedData.value}"),
-          )),
+          ElevatedButton(
+            onPressed: () {
+              // final controller = Get.find<BluetoothController>();
+
+              controller.readCharacteristic();
+            },
+            child: Text("Fetch Data"),
+          )
+
         ],
       ),
     );
