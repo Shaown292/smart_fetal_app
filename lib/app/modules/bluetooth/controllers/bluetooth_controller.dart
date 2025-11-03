@@ -124,34 +124,20 @@ class BluetoothController extends GetxController {
     print("Entered2");
     final buffer = StringBuffer(); // optional for fragmented packets
 
-    _ble.subscribeToCharacteristic(characteristic).listen(
-          (data) {
-            print("Entered3");
-        try {
-          final decoded = utf8.decode(data);
-          buffer.write(decoded);
-          print("Entered4");
-          // Optional: Detect end of JSON packet (simple heuristic)
-          if (decoded.trim().endsWith('}')) {
-            print("Entered5");
-            final jsonString = buffer.toString();
-            buffer.clear();
-
-            print("Received JSON from BLE: $jsonString");
-
-            final jsonMap = jsonDecode(jsonString);
-            final parsedData = PrenatalBeltData.fromJson(jsonMap);
-
-            // Update observables
-            beltData.value = parsedData;
-            receivedData.value = jsonString;
-          }
-        } catch (e) {
-          print("Error decoding BLE data: $e");
-        }
-      },
-      onError: (e) => print("Subscribe error: $e"),
-    );
+    _ble.subscribeToCharacteristic(characteristic).listen((data) {
+      try {
+        print("Entered3");
+        final jsonString = utf8.decode(data);
+        print("Raw data: $jsonString");
+        final jsonMap = jsonDecode(jsonString);
+        beltData.value = PrenatalBeltData.fromJson(jsonMap);
+        receivedData.value = jsonString;
+      } catch (e) {
+        print("Error decoding BLE data: $e");
+      }
+    }, onError: (e) {
+      print("Subscribe error: $e");
+    });
   }
 
   /// Read characteristic (on demand)
@@ -176,15 +162,15 @@ class BluetoothController extends GetxController {
     }
   }
 
-  /// Disconnect device
-  // void disconnectDevice() {
-  //   if (connectedDeviceId.value.isNotEmpty) {
-  //     _ble.disconnectDevice(id: connectedDeviceId.value);
-  //     connectionStatus.value = "Disconnected";
-  //     connectedDeviceId.value = "";
-  //     beltData.value = null;
-  //   }
-  // }
+ // / Disconnect device
+ //  void disconnectDevice() {
+ //    if (connectedDeviceId.value.isNotEmpty) {
+ //      _ble.(id: connectedDeviceId.value);
+ //      connectionStatus.value = "Disconnected";
+ //      connectedDeviceId.value = "";
+ //      beltData.value = null;
+ //    }
+ //  }
 
   @override
   void onClose() {
