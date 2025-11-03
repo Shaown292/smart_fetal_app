@@ -36,14 +36,14 @@ class BluetoothView extends GetView<BluetoothController> {
               },
             ),
           )),
-          ElevatedButton(
-            onPressed: () {
-              // final controller = Get.find<BluetoothController>();
-
-              controller.readCharacteristic();
-            },
-            child: Text("Fetch Data"),
-          )
+          // ElevatedButton(
+          //   onPressed: () {
+          //     // final controller = Get.find<BluetoothController>();
+          //
+          //     controller.readCharacteristic();
+          //   },
+          //   child: Text("Fetch Data"),
+          // )
 
         ],
       ),

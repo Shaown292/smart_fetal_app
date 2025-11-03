@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/animation.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:smart_fetal_app/app/modules/bluetooth/controllers/bluetooth_controller.dart';
 
 import '../../../model/parental_belt_data.dart';
 
@@ -14,6 +15,7 @@ class CheckingPositionController extends GetxController with GetTickerProviderSt
   RxBool updateChanges = false.obs;
   RxList<PrenatalBeltData> parentalData = <PrenatalBeltData>[].obs;
   late final style = getStyleForPosition(parentalData.last.positionState);
+  BluetoothController bluetoothController = BluetoothController();
 
   // RxList<PrenatalBeltData> dataList = <PrenatalBeltData>[].obs;
   RxBool isLoading = false.obs;
@@ -74,7 +76,7 @@ class CheckingPositionController extends GetxController with GetTickerProviderSt
   }
 
   Future<List<PrenatalBeltData>> fetchPrenatalData() async {
-    final String response = await rootBundle.loadString('assets/data/parental_belt.json');
+    final String response =  bluetoothController.receivedData.value;
     final List<dynamic> data = json.decode(response);
     parentalData.value = data.map((e) => PrenatalBeltData.fromJson(e)).toList();
     print(parentalData.last.positionState);

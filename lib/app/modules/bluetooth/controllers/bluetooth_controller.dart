@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:smart_fetal_app/app/routes/app_pages.dart';
 
 class BluetoothController extends GetxController {
   final FlutterReactiveBle _ble = FlutterReactiveBle();
@@ -77,6 +78,7 @@ class BluetoothController extends GetxController {
       if (update.connectionState == DeviceConnectionState.connected) {
         discoverServices(device.id);
       }
+      Get.toNamed(Routes.SPLASH_SCREEN);
     }, onError: (e) {
       print("Connection error: $e");
       connectionStatus.value = "Error";
