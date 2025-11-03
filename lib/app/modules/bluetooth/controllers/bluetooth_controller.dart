@@ -1,24 +1,33 @@
 import 'dart:async';
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:get/get.dart';
+import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:smart_fetal_app/app/routes/app_pages.dart';
 
+import '../../../model/parental_belt_data.dart';
+import '../../../routes/app_pages.dart';
+
+/// Bluetooth Controller for handling BLE communication
 class BluetoothController extends GetxController {
   final FlutterReactiveBle _ble = FlutterReactiveBle();
+
+  // Replace these UUIDs with your device's service and characteristic
   final myServiceUuid = Uuid.parse("12345678-1234-1234-1234-123456789012");
   final characteristicUuid = Uuid.parse("12345678-1234-1234-1234-123456789013");
 
-  // Observables
+  // Reactive observables
   var devices = <DiscoveredDevice>[].obs;
   var connectionStatus = "Disconnected".obs;
   var connectedDeviceId = "".obs;
   var receivedData = "".obs;
+  var beltData = Rxn<PrenatalBeltData>();
 
+  StreamSubscription<DiscoveredDevice>? _scanSubscription;
   Stream<ConnectionStateUpdate>? _connectionStream;
 
-  /// Request runtime permissions for BLE
+  /// Request runtime BLE permissions
   Future<void> requestPermissions() async {
     var status = await [
       Permission.bluetoothScan,
@@ -33,91 +42,80 @@ class BluetoothController extends GetxController {
     }
   }
 
-  /// Scan for BLE devices (optional: filter by service UUID)
-  void startScan({String? serviceUuid}) async {
+  /// Start scanning for devices advertising our target service
+  void startScan() async {
     devices.clear();
     await requestPermissions();
 
-    // List<Uuid> services = [myServiceUuid];
-    // if (serviceUuid != null && serviceUuid.isNotEmpty) {
-    //   services.add(Uuid.parse(serviceUuid));
-    // }
-
-    _ble.scanForDevices(withServices: [myServiceUuid]).listen((device) {
-      if (!devices.any((d) => d.id == device.id)) {
-        devices.add(device);
-      }
-      else{
-        Text("Device not found");
-      }
-    }, onError: (e) {
-      print("Scan error: $e");
-    });
+    _scanSubscription = _ble.scanForDevices(withServices: [myServiceUuid]).listen(
+          (device) {
+        if (!devices.any((d) => d.id == device.id)) {
+          devices.add(device);
+          print("Found device: ${device.name} (${device.id})");
+        }
+      },
+      onError: (e) => print("Scan error: $e"),
+    );
   }
 
-  /// Stop scanning (cleanup)
+  /// Stop scanning
   void stopScan() {
-    _ble.deinitialize(); // clears old BLE connections
+    _scanSubscription?.cancel();
+    _scanSubscription = null;
   }
 
-  /// Connect to a BLE device
+  /// Connect to the selected BLE device
   void connectToDevice(DiscoveredDevice device) {
     connectedDeviceId.value = device.id;
     connectionStatus.value = "Connecting";
 
     _connectionStream = _ble.connectToDevice(
       id: device.id,
-      connectionTimeout: Duration(seconds: 10),
+      connectionTimeout: const Duration(seconds: 10),
     );
 
-    _connectionStream!.listen((update) {
-      connectionStatus.value = update.connectionState.toString();
+    _connectionStream!.listen(
+          (update) {
+        connectionStatus.value = update.connectionState.toString();
+        print("Device ${device.name} state: ${update.connectionState}");
 
-      print("Device ${device.name} state: ${update.connectionState}");
-
-      if (update.connectionState == DeviceConnectionState.connected) {
-        discoverServices(device.id);
-      }
-      Get.toNamed(Routes.SPLASH_SCREEN);
-    }, onError: (e) {
-      print("Connection error: $e");
-      connectionStatus.value = "Error";
-    });
+        if (update.connectionState == DeviceConnectionState.connected) {
+          discoverServices(device.id);
+          Get.toNamed(Routes.SPLASH_SCREEN); // Navigate after successful connection
+        }
+      },
+      onError: (e) {
+        print("Connection error: $e");
+        connectionStatus.value = "Error";
+      },
+    );
   }
 
-  /// Disconnect device
-  // void disconnectDevice() {
-  //   if (connectedDeviceId.value.isNotEmpty) {
-  //     _ble.disconnectDevice(id: connectedDeviceId.value);
-  //     connectionStatus.value = "Disconnected";
-  //     connectedDeviceId.value = "";
-  //   }
-  // }
+  /// Discover GATT services and subscribe to the target characteristic
+  Future<void> discoverServices(String deviceId) async {
+    try {
+      final services = await _ble.discoverServices(deviceId);
 
-  /// Discover services and characteristics
-  void discoverServices(String deviceId) async {
-    final services = await _ble.discoverServices(deviceId);
+      print("=== Services & Characteristics ===");
+      for (var service in services) {
+        print("Service: ${service.serviceId}");
+        for (var char in service.characteristics) {
+          print(
+              "  Char: ${char.characteristicId}  Read:${char.isReadable} Notify:${char.isNotifiable}");
 
-    print("=== Services & Characteristics ===");
-    for (var service in services) {
-      print("Service: ${service.serviceId}");
-
-      for (var char in service.characteristics) {
-        print("  Characteristic: ${char.characteristicId} "
-            "Read:${char.isReadable} "
-            "Notify:${char.isNotifiable} "
-            "Write:${char.isWritableWithResponse} / ${char.isWritableWithoutResponse}");
-        // Subscribe if notifiable
-        if (char.isNotifiable) {
-          subscribeToCharacteristic(deviceId, service.serviceId, char.characteristicId);
+          // Only subscribe to our target characteristic
+          if (char.characteristicId == characteristicUuid && char.isNotifiable) {
+            subscribeToCharacteristic(deviceId, service.serviceId, char.characteristicId);
+          }
         }
       }
+      print("==================================");
+    } catch (e) {
+      print("Service discovery error: $e");
     }
-    print("==================================");
   }
 
-
-  /// Subscribe to notifications from a characteristic
+  /// Subscribe to the characteristic for streaming data
   void subscribeToCharacteristic(String deviceId, Uuid serviceId, Uuid characteristicId) {
     final characteristic = QualifiedCharacteristic(
       serviceId: serviceId,
@@ -125,14 +123,37 @@ class BluetoothController extends GetxController {
       deviceId: deviceId,
     );
 
-    _ble.subscribeToCharacteristic(characteristic).listen((data) {
-      receivedData.value = data.toString();
-      print("Received data: $data");
-    }, onError: (e) {
-      print("Subscribe error: $e");
-    });
+    final buffer = StringBuffer(); // optional for fragmented packets
+
+    _ble.subscribeToCharacteristic(characteristic).listen(
+          (data) {
+        try {
+          final decoded = utf8.decode(data);
+          buffer.write(decoded);
+
+          // Optional: Detect end of JSON packet (simple heuristic)
+          if (decoded.trim().endsWith('}')) {
+            final jsonString = buffer.toString();
+            buffer.clear();
+
+            print("Received JSON from BLE: $jsonString");
+
+            final jsonMap = jsonDecode(jsonString);
+            final parsedData = PrenatalBeltData.fromJson(jsonMap);
+
+            // Update observables
+            beltData.value = parsedData;
+            receivedData.value = jsonString;
+          }
+        } catch (e) {
+          print("Error decoding BLE data: $e");
+        }
+      },
+      onError: (e) => print("Subscribe error: $e"),
+    );
   }
 
+  /// Read characteristic (on demand)
   Future<void> readCharacteristic() async {
     if (connectedDeviceId.value.isEmpty) return;
 
@@ -144,11 +165,30 @@ class BluetoothController extends GetxController {
 
     try {
       final data = await _ble.readCharacteristic(characteristic);
-      receivedData.value = data.toString();
-      print("Read Data: $data");
+      final jsonString = utf8.decode(data);
+      final jsonMap = jsonDecode(jsonString);
+      beltData.value = PrenatalBeltData.fromJson(jsonMap);
+      receivedData.value = jsonString;
+      print("Read data: $jsonString");
     } catch (e) {
       print("Read error: $e");
     }
   }
 
+  /// Disconnect device
+  // void disconnectDevice() {
+  //   if (connectedDeviceId.value.isNotEmpty) {
+  //     _ble.disconnectDevice(id: connectedDeviceId.value);
+  //     connectionStatus.value = "Disconnected";
+  //     connectedDeviceId.value = "";
+  //     beltData.value = null;
+  //   }
+  // }
+
+  @override
+  void onClose() {
+    stopScan();
+    // disconnectDevice();
+    super.onClose();
+  }
 }

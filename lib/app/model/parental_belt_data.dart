@@ -2,6 +2,14 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import 'dart:async';
+import 'dart:convert';
+import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
+import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:smart_fetal_app/app/routes/app_pages.dart';
+
+/// Model for Prenatal Belt Sensor Data
 class PrenatalBeltData {
   final double tempMeanC;
   final String positionState;
@@ -36,18 +44,16 @@ class PrenatalBeltData {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      "temp_mean_c": tempMeanC,
-      "position_state": positionState,
-      "position_quality": positionQuality,
-      "heart_rate_bpm": heartRateBpm,
-      "pitch": pitch,
-      "roll": roll,
-      "yaw": yaw,
-      "timestamp": timestamp,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    "temp_mean_c": tempMeanC,
+    "position_state": positionState,
+    "position_quality": positionQuality,
+    "heart_rate_bpm": heartRateBpm,
+    "pitch": pitch,
+    "roll": roll,
+    "yaw": yaw,
+    "timestamp": timestamp,
+  };
 }
 
 class PositionStyle {
@@ -107,8 +113,8 @@ PositionStyle getStyleForPosition(String positionState) {
         message: "Good Posture",
         rotationSuggestion: "Left side lying",
         suggestionsForPatient:
-            "Continue with micro-movements to maintain good circulations", 
-          messageColor: Color(0xFF3C8B40), 
+            "Continue with micro-movements to maintain good circulations",
+          messageColor: Color(0xFF3C8B40),
       );
 
     case "right-side":

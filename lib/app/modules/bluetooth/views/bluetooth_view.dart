@@ -15,8 +15,7 @@ class BluetoothView extends GetView<BluetoothController> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
-              onPressed: () => controller.startScan(
-                  serviceUuid: "YOUR_SERVICE_UUID_HERE"), // optional
+              onPressed: () => controller.startScan(), // optional
               child: Text("Scan Devices"),
             ),
           ),
