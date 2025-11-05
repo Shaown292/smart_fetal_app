@@ -163,7 +163,7 @@ class HomeView extends GetView<HomeController> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    width: 130,
+                    width: 115,
                     height: 80,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.pink.shade100, width: 2),
@@ -224,7 +224,7 @@ class HomeView extends GetView<HomeController> {
                     ),
                   ),
                   Container(
-                    width: 130,
+                    width: 115,
                     height: 80,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.pink.shade100, width: 2),
