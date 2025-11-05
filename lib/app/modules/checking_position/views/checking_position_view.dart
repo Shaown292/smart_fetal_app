@@ -69,9 +69,11 @@ class CheckingPositionView extends GetView<CheckingPositionController> {
         }
 
         if (controller.error.isNotEmpty) {
-          return Text(
-            controller.error.value,
-            style: const TextStyle(color: Colors.red),
+          return Center(
+            child: Text(
+              "Check your internet connection and try again",
+              style: const TextStyle(color: Colors.red, fontSize: 20),
+            ),
           );
         }
 
