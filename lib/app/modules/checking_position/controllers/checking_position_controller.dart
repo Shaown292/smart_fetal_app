@@ -36,6 +36,10 @@ class CheckingPositionController extends GetxController with GetTickerProviderSt
         final json = response.data['data'];
         parentalData.value = PrenatalBeltData.fromJson(json);
         print('✅ Data fetched: ${parentalData.value?.tempMeanC}');
+        print('✅ Heart rate: ${parentalData.value?.heartRateBpm}');
+        print('✅ Heart rate: ${parentalData.value?.timestamp}');
+        print('✅ Tilt: ${parentalData.value?.pitch}');
+        print('✅ Roll: ${parentalData.value?.roll}');
       } else {
         error.value = 'Server error: ${response.statusCode}';
       }

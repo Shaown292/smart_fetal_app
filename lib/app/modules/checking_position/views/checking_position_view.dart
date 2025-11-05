@@ -65,7 +65,7 @@ class CheckingPositionView extends GetView<CheckingPositionController> {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const CircularProgressIndicator();
+          return Center(child: const CircularProgressIndicator());
         }
 
         if (controller.error.isNotEmpty) {
@@ -107,7 +107,7 @@ class CheckingPositionView extends GetView<CheckingPositionController> {
                         ),
                         SizedBox(width: 10),
                         Text(
-                          "Connected",
+                          "Server Connected",
                           style: GoogleFonts.poppins(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -116,26 +116,13 @@ class CheckingPositionView extends GetView<CheckingPositionController> {
                         ),
                       ],
                     ),
-                    Row(
-                      children: [
-                        Text(
-                          "Last Packet",
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF000000),
-                          ),
-                        ),
-                        SizedBox(width: 5),
-                        Text(
-                          "2s ago",
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF000000),
-                          ),
-                        ),
-                      ],
+                    Text(
+                      "Time stamp: ${controller.parentalData.value!.timestamp!.substring(11, 19)}",
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF000000),
+                      ),
                     ),
                   ],
                 ),
@@ -161,13 +148,26 @@ class CheckingPositionView extends GetView<CheckingPositionController> {
                               color: Color(0xFF4B5563),
                             ),
                           ),
-                          Container(
-                            height: 8,
-                            width: 8,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color:controller.style.dotColor,
-                            ),
+                          Row(
+                            children: [
+                              Container(
+                                height: 8,
+                                width: 8,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: controller.style.dotColor,
+                                ),
+                              ),
+                              SizedBox(width: 5,),
+                              Text(
+                                "Heart Rate: ${controller.parentalData.value!.heartRateBpm}",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: controller.style.dotColor,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
