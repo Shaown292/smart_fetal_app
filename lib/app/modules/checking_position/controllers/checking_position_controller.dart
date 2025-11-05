@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/animation.dart';
 import 'package:get/get.dart';
 import 'package:smart_fetal_app/app/modules/bluetooth/controllers/bluetooth_controller.dart';
@@ -12,8 +13,7 @@ class CheckingPositionController extends GetxController with GetTickerProviderSt
   late AnimationController ripple2;
   RxBool triggerAnimation = false.obs;
   RxBool updateChanges = false.obs;
-  RxList<PrenatalBeltData> parentalData = <PrenatalBeltData>[].obs;
-  late final style = getStyleForPosition(parentalData.last.positionState);
+  late final style = getStyleForPosition(parentalData.value!.positionState.toString());
   BluetoothController bluetoothController = BluetoothController();
 
   // RxList<PrenatalBeltData> dataList = <PrenatalBeltData>[].obs;
@@ -21,32 +21,37 @@ class CheckingPositionController extends GetxController with GetTickerProviderSt
 
   Timer? _timer;
 
+  final Dio _dio = Dio();
+  final Rxn<PrenatalBeltData> parentalData = Rxn<PrenatalBeltData>();
+  final error = ''.obs;
 
-  var imuA = TiltRotation(pitch: 3.2, roll: 2.0, yaw: 0.6).obs;
-  var imuB = TiltRotation(pitch: 0.1, roll: 2, yaw: 0).obs;
+  Future<void> fetchData() async {
+    isLoading.value = true;
+    error.value = '';
 
-  // Update function with new values
-  void updateImuA(double pitch, double roll, double yaw) {
-    imuA.update((val) {
-      val!.pitch = pitch;
-      val.roll = roll;
-      val.yaw = yaw;
-    });
+    try {
+      final response = await _dio.get('http://18.220.38.116:3000/receive');
+
+      if (response.statusCode == 200) {
+        final json = response.data['data'];
+        parentalData.value = PrenatalBeltData.fromJson(json);
+        print('✅ Data fetched: ${parentalData.value?.tempMeanC}');
+      } else {
+        error.value = 'Server error: ${response.statusCode}';
+      }
+    } catch (e) {
+      error.value = 'Failed to fetch data: $e';
+    } finally {
+      isLoading.value = false;
+    }
   }
 
-  void updateImuB(double pitch, double roll, double yaw) {
-    imuB.update((val) {
-      val!.pitch = pitch;
-      val.roll = roll;
-      val.yaw = yaw;
-    });
-  }
 
 
   @override
   void onInit() {
     super.onInit();
-    fetchPrenatalData();
+    fetchData();
     // loadLocalJson();
     ripple1 = AnimationController(
       vsync: this,
@@ -74,13 +79,7 @@ class CheckingPositionController extends GetxController with GetTickerProviderSt
     super.onClose();
   }
 
-  Future<List<PrenatalBeltData>> fetchPrenatalData() async {
-    final String response =  bluetoothController.receivedData.value;
-    final List<dynamic> data = json.decode(response);
-    parentalData.value = data.map((e) => PrenatalBeltData.fromJson(e)).toList();
-    print(parentalData.last.positionState);
-    return data.map((e) => PrenatalBeltData.fromJson(e)).toList();
-  }
+
 }
 
 class TiltRotation {

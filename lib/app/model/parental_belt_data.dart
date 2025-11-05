@@ -2,59 +2,45 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import 'dart:async';
-import 'dart:convert';
-import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
-import 'package:get/get.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:smart_fetal_app/app/routes/app_pages.dart';
 
 /// Model for Prenatal Belt Sensor Data
 class PrenatalBeltData {
-  final double tempMeanC;
-  final String positionState;
-  final String positionQuality;
-  final int heartRateBpm;
-  final double pitch;
-  final double roll;
-  final double yaw;
-  final int timestamp;
+  final double? tempMeanC;
+  final String? positionState;
+  final String? positionQuality;
+  final int? heartRateBpm;
+  final double? pitch;
+  final double? roll;
+  final double? yaw;
+  final String? timestamp;
 
   PrenatalBeltData({
-    required this.tempMeanC,
-    required this.positionState,
-    required this.positionQuality,
-    required this.heartRateBpm,
-    required this.pitch,
-    required this.roll,
-    required this.yaw,
-    required this.timestamp,
+    this.tempMeanC,
+    this.positionState,
+    this.positionQuality,
+    this.heartRateBpm,
+    this.pitch,
+    this.roll,
+    this.yaw,
+    this.timestamp,
   });
 
-  factory PrenatalBeltData.fromJson(Map<String, dynamic> json) {
+  factory PrenatalBeltData.fromJson(Map<String, dynamic>? json) {
+    if (json == null) return PrenatalBeltData();
+
     return PrenatalBeltData(
-      tempMeanC: (json['temp_mean_c'] as num).toDouble(),
-      positionState: json['position_state'] as String,
-      positionQuality: json['position_quality'] as String,
-      heartRateBpm: json['heart_rate_bpm'] as int,
-      pitch: (json['pitch'] as num).toDouble(),
-      roll: (json['roll'] as num).toDouble(),
-      yaw: (json['yaw'] as num).toDouble(),
-      timestamp: json['timestamp'] as int,
+      tempMeanC: (json['temp_mean_c'] as num?)?.toDouble(),
+      positionState: json['position_state'] as String?,
+      positionQuality: json['position_quality'] as String?,
+      heartRateBpm: json['heart_rate_bpm'] as int?,
+      pitch: (json['pitch'] as num?)?.toDouble(),
+      roll: (json['roll'] as num?)?.toDouble(),
+      yaw: (json['yaw'] as num?)?.toDouble(),
+      timestamp: json['timestamp'] as String?,
     );
   }
-
-  Map<String, dynamic> toJson() => {
-    "temp_mean_c": tempMeanC,
-    "position_state": positionState,
-    "position_quality": positionQuality,
-    "heart_rate_bpm": heartRateBpm,
-    "pitch": pitch,
-    "roll": roll,
-    "yaw": yaw,
-    "timestamp": timestamp,
-  };
 }
+
 
 class PositionStyle {
   /// The main background color for the container (e.g., card or panel)
